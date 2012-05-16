@@ -1,0 +1,109 @@
+﻿This is an early pre-beta reference for the MicroCash p2p node API. These functions will very likely change before release.
+
+
+** General Functions **
+
+sc_getblockbynumber <height>
+TBD, but similar to original solidcoin function.
+
+
+sc_gethash <data>
+Runs the PoW hashing function against the data and returns the hex encoded hash output. The data is expected to be 128 bytes encoded as hex.
+Outputs:
+  hash
+
+
+sc_getinfo
+Returns general MicroCash p2p network info.
+Outputs:
+  version
+  loaded
+  blocks
+  accounts
+  transactions
+  transactions_memorypool
+  solidcoins_created
+  solidcoins_feespaid
+  connections
+  difficulty
+  network_hashrate
+  testnet
+  mintxfee
+
+sc_getmining
+TBD, but similar to original solidcoin function.
+
+
+sc_getwork
+TBD, but similar to original solidcoin function.
+
+
+sc_testwork <data>
+TBD, but similar to original solidcoin function.
+
+
+stop
+Gracefully shuts down a node.
+
+
+** Local Admin Functions **
+
+sc_accountcreate <name>
+Ceates a local account on the p2p node.
+Outputs:
+  name
+  address
+
+
+sc_accountlist
+Returns a list of all local accounts on the p2p node.
+Outputs:
+  accounts
+    name
+	address
+	balance
+	tx (count)
+
+
+sc_accountremove <name>
+Removes a local account on the p2p node.
+Outputs:
+  removed account (name)
+
+
+sc_accountseturl <name> [url]
+Sets a callback URL for a local account. This url is called when activity is detected on the referenced account.
+Outputs:
+  (none)
+
+
+
+** Remote Client Functions **
+
+sc_getbalance <account_1> [account_2] ... [account_8]
+Returns the balance and other relevant information for one or more accounts. This function is currently limited to 8 accounts per call.
+Outputs:
+  balance
+    address
+	addressid
+	balance
+	tx (count)
+
+
+sc_gethistory <address> <maxtrans>
+Returns an object containing transaction history for an address. The maxtrans parameter limits the number of transactions returned, a value of zero will return the last 1000 transactiosn for that address.
+Outputs:
+  history
+    hash
+    time
+    amount
+    fromto
+    type
+
+
+sc_sendtransaction <data>
+Sends a transaction onto the network for inclusion in the block chain. The data is composed of the hex encoded serialization of a properly signed transaction.
+Outputs:
+  sent (true/false)
+
+

@@ -1,0 +1,42 @@
+﻿*************************** MicroCash Thin Client ****************************
+
+Copyright (C) 2012 MicroCash Developers (RealSolid, mtrlt, Ahimoth, karmaon)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software, including the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+The concepts, techniques, and designs implemented in the MicroCash Thin Client are free to use in any project.
+
+The direct use or inclusion of this code, in part or whole, including using it in precompiled form, in projects which are not in close relation to MicroCash or do not work with the project (currently defined by the project hosted at http://microcash.org) is prohibited.
+
+Exemptions from some or all parts of this license are available upon written request and approval by the MicroCash development team.
+
+
+******************************************************************************
+
+
+Your projects source code doesn't need to be released if you use the source or derive from it.  Businesses and companies are also free to use the source provided all other conditions are met.
+
+The MicroCash name is trademarked by RealSolid. All source applicable is also copyrighted by RealSolid. The copyrights and trademarks will be handed over to the MicroCash NPO which will be created at some point in the future.
+
+
+******************************************************************************
+
+
+A laymans translation of this license (not legally binding):
+
+If you want to use this source code in a project, then the project must be related to and in support of MicroCash, and the above copyright and license must be included in a human readable format.
+However, you are free to read the source code and create your own independent implentation of it's functions in an unrelated project as long as your implementation is different enough to be considered an original creation by you.
+
+*OR*
+
+You can make a written request to the MicroCash Developers explaining your intended usage and which parts of the license are preventing that use. Upon review, the MicroCash Developers *may* issue a custom license to you.
+
+
+******************************************************************************
+
+
+Disclaimer of warranty
+Covered code is provided under this license on an "as is" basis, without warranty of any kind, either expressed or implied, including, without limitation, warranties that the covered code is free of defects, merchantable, fit for a particular purpose or non-infringing. The entire risk as to the quality and performance of the covered code is with you. Should any covered code prove defective in any respect, you (not the initial developer or any other contributor) assume the cost of any necessary servicing, repair or correction. This disclaimer of warranty constitutes an essential part of this license. No use of any covered code is authorized hereunder except under this disclaimer.
+

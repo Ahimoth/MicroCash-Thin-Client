@@ -1,0 +1,5 @@
+﻿The MicroCash Thin Client has the following external dependencies.
+
+.Net Framework 4.0 (http://www.microsoft.com/en-us/download/details.aspx?id=17851)
+BouncyCastle.Crypto 1.7 (http://www.bouncycastle.org/csharp/)
+JacksonSoft.CustomTabControl (http://www.codeproject.com/Articles/91387/Painting-Your-Own-Tabs-Second-Edition)
