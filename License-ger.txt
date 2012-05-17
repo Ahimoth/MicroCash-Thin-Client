@@ -1,0 +1,64 @@
+The below is a translation of the MicroCash Thin Client License to the german language. Please be aware that
+this transaltion is not a legal binding agreement, but carries the sole effort to make the license terms more
+understandable to the end user. For a legally binding agreement, please see the original License file, saved
+as "License.txt".
+
+Das folgende ist eine Übersetzung der MicroCash Thin Client-Lizenz in die Deutsche Sprache. Bitte beachten sie,
+dass es sich bei dieser übersetzung nicht um eine rechtlich wirksame vereinbarung handelt, sondern dass der
+einzige Zweck dieser Übersetzung das bessere Verständnis der Lizenzbedingungen für den Endnutzer ist.
+Für eine rechtlich wirksame Lizenz konsultieren sie bitte die beigefügte Originallizenz, die unter dem Namen
+"License.txt" verfügbar sein sollte.
+
+*************************** MicroCash Thin Client ****************************
+Copyright (C) 2012 MicroCash Entwicker (RealSolid, mtrlt, Ahimoth, Karmaon)
+
+Hiermit wird die Erlaubnis, kostenfrei, an jede Person die eine Kopie dieser Software und der dazugehörigen
+Dokumntation(nachfolgend die "Software" genannt) erteilt, mit dieser Software zu arbeiten. Dies beinhaltet das
+Recht der Benutzung, des Kopierens, Veränderns, Zusammenfügens, Veröffentlichens oder anderweitigen Verteilens,
+der Unterlizensierung und/oder dem Verkauf der Software, sowie die Erlaubnis an Personen, an die diese Software
+weitergegeben wird, unter den folgenden Bedingungen:
+
+Das vorstehende Copyright sowie diese Erlaubnis müssen in allen Kopien und grösseren Teilen der Software enthalten sein.
+
+Die Konzepte, Techniken und Desgins die in MicroCash implementiert sind können kostenlos in jedem anderen Projekt verwendet werden.
+
+Die direkte Benutzung oder Einbindung dieses Programmtextes, teilweise oder als ganzes, einschliesslich der einbindung in vorkompilierter Form in Projekten die nicht mit dem MicroCash-Prjekt zusammenhängen
+(Derzeit definiert durch das Projekt, erreichbar unter http://microcash.org) ist verboten.
+
+Ausnahmen von einigen oder allen Teilen dieser Lizenz können nach schriftlicher anfrage und Genehmigung durch das MicroCash Development Team vereinbart werden.
+
+******************************************************************************
+
+Der Quellcode ihres Projektes muss nicht veröffentlicht werden, wenn sie den Quelltext der Software benutzen oder von ihm Ableiten.
+Unternehmen und Firmen ist es ausdrücklich erlaubt, den Quellcode zu verwenden, sofern alle anderen Voraussetzungen dieser erfüllt sind.
+
+Der Name "MicroCash" ist ein Geschützter Markenname und ist Eigentum von RealSolid. Jeglicher Quellcode unter dieser Lizenz ist ebenso urheberrechtliches Eigentum von Realsolid.
+Die Urheberrechte und Markennamen werden in der nahen Zukunft an eine MicroCash NPO-Gesellschaft übergeben.
+
+******************************************************************************
+
+Eine verständliche Übersetzung dieser Lizenz(nicht rechtlich wirksam):
+
+Wenn sie diesen Quelltext in einem Projekt verwenden wollen, muss das Projekt verwandt und in Unterstützung zu Microcash stehen, und
+die obenstehenden Copyrights und die Lizenzdatei müssen in menschenlesbarem Format eingebunden sein.
+Es steht ihnen jedoch frei den Quelltext zu lesen, und ihre eigenen und unabhängigen implementierungen seiner Funktionen in einem nichtverwandten Projekt
+zu benutzen, sofern ihre Implementierung unterschiedlich genug ist, um als Originalwerk qualifiziert zu werden.
+
+* ODER *
+
+Sie können eine schriftliche Anfrage an die MicroCash Entwickler richten, in der sie ihre gewünschte Nutzung
+darlegen, und in welchen Punkten diese Lizenz sie davon abhält, diese Nutzung durchzuführen.
+Nach Abstimmung können die MicroCash Entwickler ihnen eine benutzerdefinierte Lizenz anbieten.
+
+
+******************************************************************************
+Garantieausschluss
+
+Der von dieser Lizenz behandelte Programmcode wird ihnen "wie er ist" angebote, ohne jegliche Garantieen
+oder Gewährleistungen, weder ausdrücklich noch explizit, ohne einschränkungen. Es wird nicht Garantiert,
+dass der hier behandelte Code frei von defekten, fit für die Gewerbliche Nutzung, oder benutzbar für irgend einen
+zweck ist. Das Gesamte Risiko bezüglich der Qualität und Performance des behandelten Quelltextes liegt bei ihnen.
+Sollte irgendein Teil oder der gesamte Quelltext sich als defekt in irgendeiner Art herausstellen, liegen die
+Kosten für jegliche Wartung oder notwendige Reparaturen und nachbesserungen bei ihnen(und nicht bei dem initialen Entwickler
+und oder einem anderen Beitragenden). Dieser Ausschluss von jeglicher Garantie und Gewährleistung ist ein essentieller Teil dieser Lizenz.
+Keine Beutzung irgendeines Teils des Quelltextes ist erlaubt, ausser unter diesem Haftungsausschluss.
