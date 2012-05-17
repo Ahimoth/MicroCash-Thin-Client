@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -11,82 +11,104 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Text;
 using System.Windows.Forms;
-using MicroCashLibrary;
-using MicroCashClient;
 using System.Xml;
+using MicroCash.Client.Thin.JsonRpc.Contracts;
+using MicroCash.Client.Thin.JsonRpc;
 
-namespace AccountItemCode
+namespace MicroCash.Client.Thin
 {
-    public class AccountItem
+    internal class Account
     {
-        public bool m_bEnabled;
-        public string m_name;        
-        public Int64 m_balance;
-        public int m_tx;
-        public uint m_addressid;
-        public int m_icon;
-        public CMicroCashKeyPair m_Key;
-        public List<AddressHistory> m_txhistory;
-        public List<AddressHistory> m_newtx;
+        #region Fields
+        private bool m_bEnabled;
+        private string m_name;
+        private Int64 m_balance;
+        private int m_tx;
+        private uint m_addressid;
+        private int m_icon;
+        private CMicroCashKeyPair m_KeyPair;
+        private List<AddressHistory> m_txhistory;
+        private List<AddressHistory> m_newtx;
+        #endregion
 
-        public AccountItem()
+        #region Properties
+        public bool IsEnabled
+        {
+            get { return m_bEnabled; }
+            set { m_bEnabled = value; }
+        }
+
+        public string Name
+        {
+            get { return m_name; }
+            set { m_name = value; }
+        }
+
+        public Int64 Balance
+        {
+            get { return m_balance; }
+            set { m_balance = value; }
+        }
+
+        public int TxCount
+        {
+            get { return m_tx; }
+            set { m_tx = value; }
+        }
+
+        public uint AddressId
+        {
+            get { return m_addressid; }
+            set { m_addressid = value; }
+        }
+
+        public int IconId
+        {
+            get { return m_icon; }
+            set { m_icon = value; }
+        }
+
+        public List<AddressHistory> TxHistory
+        {
+            get { return m_txhistory; }
+            set { m_txhistory = value; }
+        }
+
+        public List<AddressHistory> NewTx
+        {
+            get { return m_newtx; }
+            set { m_newtx = value; }
+        }
+        #endregion
+
+        public Account()
         {
             m_bEnabled = true;
             m_balance = 0;
             m_icon = 0;
             m_tx = 0;
             m_addressid = 0;
-            m_Key = new CMicroCashKeyPair(false);
+            m_KeyPair = new CMicroCashKeyPair(false);
             m_txhistory = new List<AddressHistory>();
             m_newtx = new List<AddressHistory>();
         }
-
         
-        public void GenerateKey()
+        public void GenerateKeyPair()
         {
-            m_Key = new CMicroCashKeyPair(true);
-        }
-
-        public void SetInfo(string name, string pubkey, string privkey, int balance)
-        {            
-            m_name=name;
-            SetKeyByString(pubkey,privkey);
-            m_balance = balance;            
-        }
-        
-        public void SetKeyByString(string pubkey, string privkey)
-        {
-            m_Key.SetKeyByString(pubkey, privkey);            
+            if (m_KeyPair == null || m_KeyPair.m_Priv == null)
+                m_KeyPair = new CMicroCashKeyPair(true);
+            else
+                throw new InvalidOperationException("Account already has a key! A new key cannot be assigned to this account!");
         }
               
         public string GetAddressString()
         {
-            return m_Key.GetAddressString();
+            return m_KeyPair.GetAddressString();
         }
-        public byte[] GetAddressBytes()
-        {
-            return m_Key.GetAddressBytes();
-        }
-        public string GetPubKey()
-        {
-            return m_Key.m_PubKeyString;
-        }
-        public byte[] GetPubKeyBytes()
-        {
-            return m_Key.m_Pub;
-        }
-        public string GetPrivKey()
-        {
-            return m_Key.m_PrivKeyString;
-        }
+
         public Int64 GetBalance()
         {
             return m_balance;
-        }
-
-        public byte[] Sign(byte[] data)
-        {
-            return m_Key.Sign(data);
         }
 
         public void AddTransactions(List<AddressHistory> txlist)
@@ -100,7 +122,57 @@ namespace AccountItemCode
                     m_txhistory.Add(tx);
                 }
             }
+        }
 
+        internal SendTxResult SendTx(MicroCashAddress paymentCodeAddress)
+        {
+            if (!paymentCodeAddress.IsPaymentCode)
+                throw new ArgumentException("Address is not a payment code!", "paymentCodeAddress");
+
+            double amount = paymentCodeAddress.GetPaymentAmount() / 10000.0000;
+
+            byte[] info = new byte[8];
+            Array.Copy(paymentCodeAddress.GetInfoBytes(), info, 8);
+
+            return SendTx(paymentCodeAddress, amount, info);
+        }
+
+        internal SendTxResult SendTx(MicroCashAddress address, double amount, byte[] info)
+        {
+            MicroCashTransaction tx = new MicroCashTransaction();
+
+            Array.Copy(m_KeyPair.m_Pub, 1, tx.m_Extra1, 0, 64);    //this isnt always sent, but may as well just copy it 
+            tx.m_dwAddressID = this.AddressId;
+            if (tx.m_dwAddressID == 0)
+            {
+                tx.m_dwType = 1;
+            }
+
+            tx.m_FromAddress = m_KeyPair.GetAddressBytes();
+            tx.m_RecvAddress = address.GetAddressBytes();
+
+            tx.m_qAmount = (Int64)(amount * 10000);
+
+            if (info != null)
+            {
+                int nLen = info.Length;
+                if (nLen > 8) nLen = 8;
+                for (int x = 0; x < 8; x++) tx.m_Info[x] = 0;
+                Array.Copy(info, tx.m_Info, nLen);
+            }
+
+            byte[] hash = tx.GetHash(false);
+            //string s = MicroCashFunctions.ToHex(hash);
+            tx.m_Signature = m_KeyPair.Sign(hash);
+
+            MicroCashRpcClient mcrpc = new MicroCashRpcClient(GlobalSettings.RpcUrl);
+            SendTransactionRpcResponse sendtx = mcrpc.SendTransaction(MicroCashFunctions.ToHex(tx.GetByteBuffer(true)));
+
+            SendTxResult result = new SendTxResult();
+            result.IsSent = sendtx.sent;
+            result.ErrorMessage = mcrpc.ErrorMessage;
+
+            return result;
         }
 
         public void AccountXMLSave(XmlTextWriter writer)
@@ -111,8 +183,8 @@ namespace AccountItemCode
             writer.WriteElementString("numtx", m_tx.ToString());
             writer.WriteElementString("addressid", m_addressid.ToString());
             writer.WriteElementString("balance", m_balance.ToString());
-            writer.WriteElementString("pubkey", GetPubKey());
-            writer.WriteElementString("privkey", GetPrivKey());
+            writer.WriteElementString("pubkey", m_KeyPair.m_PubKeyString);
+            writer.WriteElementString("privkey", m_KeyPair.m_PrivKeyString);
             writer.WriteElementString("enabled", m_bEnabled.ToString());
             writer.WriteStartElement("transactions");
             foreach (AddressHistory tx in m_txhistory)
@@ -185,7 +257,7 @@ namespace AccountItemCode
                     case XmlNodeType.EndElement:
                         if (reader.Name == "account")
                         {
-                            m_Key.SetKeyByString(priv, pub);                            
+                            m_KeyPair.SetKeyByString(priv, pub);                            
                             return true;
                         }
                         break;

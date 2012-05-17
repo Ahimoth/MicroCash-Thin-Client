@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -13,21 +13,16 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
-using GradientPanelCode;
-using AccountItemCode;
-using MicroCashLibrary;
-using ThinClientUser;
-using MicroCashClient;
 using System.Threading;
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {
     public partial class Form1 : Form
     {
-        public void SendTX(AccountItem account, byte[] to, Int64 qAmount)
+        internal void SendTX(Account account, byte[] to, Int64 qAmount)
         {
             SC_Transaction tx = new SC_Transaction();
-            tx.m_dwAddressID = account.m_addressid;
+            tx.m_dwAddressID = account.AddressId;
             Array.Copy(account.GetPubKeyBytes(), 1, tx.m_Extra1, 0, 64);    //this isnt always sent, but may as well just copy it 
             if (tx.m_dwAddressID == 0)  tx.m_dwType = 1;
             for (int x = 0; x < 8; x++) tx.m_Info[x] = 0;
@@ -48,11 +43,11 @@ namespace microcash
             SendTransaction sendtx = mcrpc.SendTransaction(MicroCashFunctions.ToHex(txserialized));
             if (sendtx != null && sendtx.sent == true)
             {
-                account.m_addressid++;
+                account.AddressId++;
             }
             else
             {
-                m_LogItems.Add("Failed to send transaction from "+account.m_name + " amount "+qAmount.ToString() + " error:"+mcrpc.m_ErrorMessage);
+                m_LogItems.Add("Failed to send transaction from "+account.Name + " amount "+qAmount.ToString() + " error:"+mcrpc.ErrorMessage);
             }
             
         }

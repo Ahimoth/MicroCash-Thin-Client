@@ -1,4 +1,4 @@
-﻿namespace microcash
+﻿namespace MicroCash.Client.Thin
 {
     partial class Form2
     {

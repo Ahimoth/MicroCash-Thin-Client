@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {
 
     public partial class Form2 : Form

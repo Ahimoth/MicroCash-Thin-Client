@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -19,7 +19,7 @@ using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Math.EC;
 using BlakeSharp;
-namespace  MicroCashLibrary
+namespace MicroCash.Client.Thin
 {    
 
     public class CMicroCashKeyPair
@@ -223,7 +223,7 @@ namespace  MicroCashLibrary
             SetString(address);
         }
 
-        public bool IsPaymentCode() { return m_bIsPaymentCode; }
+        public bool IsPaymentCode { get { return m_bIsPaymentCode; } }
         public bool IsLongAddress() { return m_bIsLongAddress; }
         public bool IsValid() { return m_bIsValid; }
         public byte[] GetInfoBytes() { return m_Info; }

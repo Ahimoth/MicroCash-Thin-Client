@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -14,10 +14,11 @@ using System.Runtime.Serialization.Json;
 using System.Configuration;
 using System.Windows.Forms;
 using System.Security.Cryptography;
+using MicroCash.Client.Thin.JsonRpc.Contracts;
 
-namespace MicroCashClient
+namespace MicroCash.Client.Thin.JsonRpc
 {
-    public class SC_Transaction
+    public class MicroCashTransaction
     {
         public uint m_dwType;
         public uint m_dwAddressID;
@@ -29,7 +30,7 @@ namespace MicroCashClient
         public byte[] m_Extra1;
         public byte[] m_Extra2;
 
-        public SC_Transaction()
+        public MicroCashTransaction()
         {
             m_Info = new byte[8];
             m_FromAddress = new byte[10];
@@ -102,66 +103,7 @@ namespace MicroCashClient
         }
     }
 
-    public class MicroCashRPC
-    {
-        public string m_RPCurl;
-        public string m_ErrorMessage;
 
-        public MicroCashRPC(string url)
-        {
-            m_RPCurl = url;
-        }
-
-        public BlockHeader GetBlockData(long blockNumber)
-        {
-            object[] parameters = { blockNumber };
-            JsonResponse<BlockHeader> response = JsonHelper.GetObjectFromJsonRPC<BlockHeader>(m_RPCurl, "sc_getblockbynumber", "thin", "client", parameters);
-            m_ErrorMessage = response.HttpErrorMessage;
-            return response.Result;
-        }
-
-        public GetInfo GetInfo()
-        {
-            object[] parameters = null;
-            JsonResponse<GetInfo> response = JsonHelper.GetObjectFromJsonRPC<GetInfo>(m_RPCurl, "sc_getinfo", "thin", "client", parameters);
-            m_ErrorMessage = response.HttpErrorMessage;
-            return response.Result;
-        }
-
-        public GetBalance GetBalance(List<string> addresses)
-        {
-            object[] parameters = new object[addresses.Count];
-            for (int x = 0; x < addresses.Count; x++) parameters[x] = addresses[x];
-
-            JsonResponse<GetBalance> response = JsonHelper.GetObjectFromJsonRPC<GetBalance>(m_RPCurl, "sc_getbalance", "thin","client", parameters);
-            m_ErrorMessage = response.HttpErrorMessage;
-            return response.Result;
-        }
-
-        public GetHistory GetHistory(string address, int nTransactions)
-        {
-            object[] parameters = { address, nTransactions };
-            JsonResponse<GetHistory> response = JsonHelper.GetObjectFromJsonRPC<GetHistory>(m_RPCurl, "sc_gethistory", "thin", "client", parameters);
-            m_ErrorMessage = response.HttpErrorMessage;
-            return response.Result;
-        }
-
-        public SendTransaction SendTransaction(string hexbytes)
-        {
-            object[] parameters = { hexbytes };
-            JsonResponse<SendTransaction> response = JsonHelper.GetObjectFromJsonRPC<SendTransaction>(m_RPCurl, "sc_sendtransaction", "thin", "client", parameters);
-            m_ErrorMessage = response.HttpErrorMessage;
-            return response.Result;
-        }
-
-        public GetInfo GetTransactions()
-        {
-            object[] parameters = null;
-            JsonResponse<GetInfo> response = JsonHelper.GetObjectFromJsonRPC<GetInfo>(m_RPCurl, "sc_getinfo", "thin", "client", parameters);
-            m_ErrorMessage = response.HttpErrorMessage;
-            return response.Result;
-        }
-    }
 
     public class MyObject 
     {
@@ -222,11 +164,11 @@ namespace MicroCashClient
                 if (ex.Status == WebExceptionStatus.ProtocolError)
                     using (Stream sr = ex.Response.GetResponseStream())
                     {
-                        DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(SCErrorResponse));
-                        SCErrorResponse response;
+                        DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(RpcErrorResponse));
+                        RpcErrorResponse response;
                         try
                         {
-                            response = (SCErrorResponse)deserializer.ReadObject(sr);
+                            response = (RpcErrorResponse)deserializer.ReadObject(sr);
                             retresponse.HttpErrorMessage = response.error.message;
                             //MessageBox.Show(response.error.message, "Server returned error");
                         }

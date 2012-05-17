@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -13,14 +13,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
-using GradientPanelCode;
-using AccountItemCode;
-using MicroCashLibrary;
-using ThinClientUser;
-using MicroCashClient;
 
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {    
 
     public partial class Form1 : Form
@@ -293,10 +288,10 @@ namespace microcash
             int n = m_SendFrom.SelectedIndex;
             m_SendFrom.Items.Clear();
             m_SendTo.Items.Clear();
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                m_SendFrom.Items.Add(account.m_name);
-                m_SendTo.Items.Add(account.m_name);
+                m_SendFrom.Items.Add(account.Name);
+                m_SendTo.Items.Add(account.Name);
             }
             if (n == -1 || n > m_SendFrom.SelectedIndex) m_SendFrom.SelectedIndex = 0;
             else m_SendFrom.SelectedIndex = n;
@@ -310,7 +305,7 @@ namespace microcash
             ComboBox comboBox = (ComboBox)sender;
 
             m_RPCMutex.WaitOne();
-            m_SendFromAmount.Text = DoBalanceString(m_ThinUser.m_Accounts[comboBox.SelectedIndex].m_balance);
+            m_SendFromAmount.Text = DoBalanceString(m_ThinUser.m_Accounts[comboBox.SelectedIndex].Balance);
             m_RPCMutex.ReleaseMutex();
             
 
@@ -329,7 +324,7 @@ namespace microcash
             if (bValid == false)
             {
                 MicroCashAddress address = new MicroCashAddress(m_SendTo.Text);
-                if (address.IsPaymentCode())
+                if (address.IsPaymentCode)
                 {
                     m_SendToAmount.ReadOnly = true;
                     m_TXInfo.ReadOnly = true;
@@ -375,65 +370,56 @@ namespace microcash
         private string GetInfoFromAddressBook(bool bIsAccountName, string name)
         {
             //send to is in our address book, first check our accounts, then the real address book
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                if (bIsAccountName && account.m_name == name) return account.GetAddressString();
-                else if (!bIsAccountName && account.GetAddressString() == name) return account.m_name;
+                if (bIsAccountName && account.Name == name) return account.GetAddressString();
+                else if (!bIsAccountName && account.GetAddressString() == name) return account.Name;
             }
             return null;
         }
 
         private void sendFunds(object sender, EventArgs e)
         {
-            if (m_SendToAmount.Text.Length <= 0) { MessageBox.Show("Please enter an amount to send","Error Creating Payment"); return; }
-            
-            string addrstr = m_SendTo.Text;
-            if (m_SendTo.Items.IndexOf(addrstr) >= 0)
-            {
-                addrstr = GetInfoFromAddressBook(true,addrstr);
-            }
-
-            MicroCashAddress address = new MicroCashAddress(addrstr);
-            if (address.IsValid() == false) { MessageBox.Show("Please enter a valid address to send to", "Error Creating Payment"); return; }
-                        
             try
             {
-                SC_Transaction tx = new SC_Transaction();
+                if (m_SendToAmount.Text.Length <= 0) { MessageBox.Show("Please enter an amount to send", "Error Creating Payment"); return; }
+
+                string addrstr = m_SendTo.Text;
+                if (m_SendTo.Items.IndexOf(addrstr) >= 0)
+                {
+                    addrstr = GetInfoFromAddressBook(true, addrstr);
+                }
+
+                MicroCashAddress address = new MicroCashAddress(addrstr);
+                if (address.IsValid() == false) { MessageBox.Show("Please enter a valid address to send to", "Error Creating Payment"); return; }
 
                 int nAccount = m_SendFrom.SelectedIndex;
-                AccountItem account = m_ThinUser.m_Accounts[nAccount];
-                
-                Array.Copy(account.GetPubKeyBytes(), 1, tx.m_Extra1, 0, 64);    //this isnt always sent, but may as well just copy it 
-                tx.m_dwAddressID = account.m_addressid;
-                if (tx.m_dwAddressID == 0)
-                {
-                    tx.m_dwType = 1;
-                }
-                tx.m_FromAddress = account.GetAddressBytes();
-                tx.m_RecvAddress = address.GetAddressBytes();
-                if (address.IsPaymentCode())
-                {
-                    tx.m_qAmount = address.GetPaymentAmount();
-                    Array.Copy(address.GetInfoBytes(), tx.m_Info, 8);                    
-                }
-                else                
-                {
-                    tx.m_qAmount = (Int64)(Convert.ToDouble(m_SendToAmount.Text) * 10000);
-                    System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-                    byte[] info = encoding.GetBytes(m_TXInfo.Text);
-                    int nLen = info.Length;
-                    if (nLen > 8) nLen = 8;
-                    for (int x = 0; x < 8; x++) tx.m_Info[x] = 0;
-                    Array.Copy(info, tx.m_Info, nLen);
-                }
-                                
-                byte[] hash = tx.GetHash(false);
-                string s = MicroCashFunctions.ToHex(hash);
-                tx.m_Signature = account.Sign(hash);
+                Account account = m_ThinUser.m_Accounts[nAccount];
 
-                MicroCashRPC mcrpc = CreateMCRPC();
-                SendTransaction sendtx = mcrpc.SendTransaction(MicroCashFunctions.ToHex(tx.GetByteBuffer(true)));
-                if (sendtx != null && sendtx.sent == true)
+                SendTxResult result = null;
+
+                if (address.IsPaymentCode)
+                {
+                    //send a payment code style transaction
+                    result = account.SendTx(address);
+                }
+                else
+                {
+                    //attempt to parse the send amount text box
+                    double amount = 0;
+                    if (!Double.TryParse(m_SendToAmount.Text, out amount))
+                        MessageBox.Show(String.Format("Could not convert {0} to a number!", m_SendToAmount.Text), "Unable to Parse!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    //convert the tx info text box, if populated
+                    byte[] info = null;
+                    if (!string.IsNullOrEmpty(m_TXInfo.Text))
+                        info = UTF8Encoding.Default.GetBytes(m_TXInfo.Text);
+
+                    //send custom transaction
+                    result = account.SendTx(address, amount, info);
+                }
+
+                if (result != null && result.IsSent == true)
                 {
                     m_SendToAmount.Text = "";
                     m_SendTo.Text = "";
@@ -443,15 +429,17 @@ namespace microcash
                 }
                 else
                 {
-                    MessageBox.Show(mcrpc.m_ErrorMessage,"Error sending transaction");
+                    MessageBox.Show(result.ErrorMessage, "Error sending transaction");
                 }
             }
             catch (Exception exception)
             {
                 MessageBox.Show(exception.Message);
             }
-            
+
         }
+
+
 
         private void createPaymentCode(object sender, EventArgs e)
         {

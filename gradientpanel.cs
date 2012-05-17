@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -12,7 +12,7 @@ using System.Drawing.Drawing2D;
 using System.Text;
 using System.Windows.Forms;
 
-namespace GradientPanelCode
+namespace MicroCash.Client.Thin
 {
     public partial class GradientPanel : System.Windows.Forms.Panel
     {

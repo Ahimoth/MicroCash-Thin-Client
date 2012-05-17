@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -13,20 +13,13 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
-using GradientPanelCode;
-using AccountItemCode;
-using MicroCashLibrary;
-using ThinClientUser;
-using MicroCashClient;
 
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {
 
     public partial class Form1 : Form
     {
-        int m_nSavedConnectType;
-        string m_SavedConnectIP;
         List<string> m_LogItems;
         bool m_bUpdateConnectionLog;
         bool m_bLoggedIn;
@@ -137,13 +130,20 @@ namespace microcash
             this.Controls.Add(m_ConnectPanelTop);
             this.Controls.Add(m_ConnectPanel);
 
-            if (m_nSavedConnectType < 0 || m_nSavedConnectType > 1) m_nSavedConnectType = 0;
-            m_ConnectType.SelectedIndex = m_nSavedConnectType;
-            m_ConnectTypeIP.Text = m_SavedConnectIP;
+            if (GlobalSettings.ConnectionType < 0 || GlobalSettings.ConnectionType > 1)
+                GlobalSettings.ConnectionType = 0;
+            m_ConnectType.SelectedIndex = GlobalSettings.ConnectionType;
+            m_ConnectTypeIP.Text = GlobalSettings.RpcAddress;
+            m_ConnectTypeIP.Validating += new CancelEventHandler(m_ConnectTypeIP_Validating);
             //selectConnectType(0);
 
             AddLogItem("Initializing client");
             
+        }
+
+        void m_ConnectTypeIP_Validating(object sender, CancelEventArgs e)
+        {
+            GlobalSettings.RpcAddress = m_ConnectTypeIP.Text;
         }
 
         void ResizeConnectionPanel(int nPanelWidth)

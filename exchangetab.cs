@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -13,15 +13,11 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
-using GradientPanelCode;
-using AccountItemCode;
-using MicroCashLibrary;
-using ThinClientUser;
-using MicroCashClient;
 using System.Runtime.Serialization;
 using System.Threading;
+using MicroCash.Client.Thin.JsonRpc;
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {
     public partial class Form1 : Form
     {
@@ -149,7 +145,6 @@ namespace microcash
                     continue;
                 }
                 object[] parameters = { null };
-                //JsonResponse<Exchange_SLC24> response = JsonHelper.GetObjectFromJsonRPC<Exchange_SLC24>("https://slc24.com", "api/exchange/orderbook/btc", null, null, parameters);
                 Exchange_SLC24 response = null;
                 Exchange_BTCE response2 = null;
                 try

@@ -1,29 +1,28 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
 using System.Xml;
 using System.Windows.Forms;
-using AccountItemCode;
 using System.Collections.Generic;
 
-namespace ThinClientUser
+namespace MicroCash.Client.Thin
 {
-    public class ThinUser
+    internal class ThinUser
     {
         public string m_name;
         string m_FileName;
         string m_pass1;
         string m_pass2;
         public int m_icon;
-        public List<AccountItem> m_Accounts;
+        public List<Account> m_Accounts;
 
         public ThinUser()
         {
             m_icon = 0;
-            m_Accounts = new List<AccountItem>();
+            m_Accounts = new List<Account>();
         }
         
         public void Create(string name, string pass1, string pass2)
@@ -36,9 +35,9 @@ namespace ThinClientUser
 
         public void AddNewAccount(string name)
         {
-            AccountItem newAccount = new AccountItem();
-            newAccount.m_name=name;
-            newAccount.GenerateKey();
+            Account newAccount = new Account();
+            newAccount.Name=name;
+            newAccount.GenerateKeyPair();
             m_Accounts.Add(newAccount);            
         }
 
@@ -58,7 +57,7 @@ namespace ThinClientUser
                 writer.WriteElementString("pass2", m_pass2);
                 writer.WriteElementString("icon", m_icon.ToString());
 
-                foreach(AccountItem account in m_Accounts)
+                foreach(Account account in m_Accounts)
                 {
                     account.AccountXMLSave(writer);
                 }
@@ -102,7 +101,7 @@ namespace ThinClientUser
                                 case "icon": reader.MoveToContent(); m_icon = reader.ReadElementContentAsInt(); break;
                                 case "account": 
                                     {
-                                        AccountItem newAccount = new AccountItem();
+                                        Account newAccount = new Account();
                                         if (newAccount.AccountXMLLoad(reader))
                                         {
                                             m_Accounts.Add(newAccount);

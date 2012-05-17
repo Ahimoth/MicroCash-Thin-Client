@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -13,14 +13,11 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Windows.Forms;
-using GradientPanelCode;
-using AccountItemCode;
-using MicroCashLibrary;
-using ThinClientUser;
-using MicroCashClient;
 using System.Threading;
+using MicroCash.Client.Thin.JsonRpc;
+using MicroCash.Client.Thin.JsonRpc.Contracts;
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {
     public partial class Form1 : Form
     {
@@ -37,12 +34,12 @@ namespace microcash
 
                 m_bUpdateNow = false;
 
-                MicroCashRPC mcrpc = CreateMCRPC();
+                MicroCashRpcClient mcrpc = CreateMCRPC();
 
                 if (++y == 4 * 60)
                 {
                     y = 0;                    
-                    GetInfo networkInfo = mcrpc.GetInfo();
+                    GetInfoRpcResponse networkInfo = mcrpc.GetInfo();
                     if (networkInfo != null)
                     {
                         m_RPCMutex.WaitOne();
@@ -55,14 +52,14 @@ namespace microcash
                 List<string> addresses = new List<string>();
 
                 m_RPCMutex.WaitOne();
-                foreach (AccountItem account in m_ThinUser.m_Accounts) addresses.Add(account.GetAddressString());
+                foreach (Account account in m_ThinUser.m_Accounts) addresses.Add(account.GetAddressString());
                 m_RPCMutex.ReleaseMutex();
 
-                GetBalance balances = mcrpc.GetBalance(addresses);
-                if (mcrpc.m_ErrorMessage.Length > 0)
+                GetBalanceRpcResponse balances = mcrpc.GetBalance(addresses);
+                if (mcrpc.ErrorMessage.Length > 0)
                 {
                     m_RPCMutex.WaitOne();
-                    m_LogItems.Add(mcrpc.m_ErrorMessage);
+                    m_LogItems.Add(mcrpc.ErrorMessage);
                     m_bUpdateConnectionLog = true;
                     m_bLoggedIn = false;
                     m_RPCMutex.ReleaseMutex();
@@ -78,16 +75,16 @@ namespace microcash
 
                     foreach (AddressBalance balance in balances.AddressBalances)
                     {
-                        AccountItem account = m_ThinUser.m_Accounts.Find(delegate(AccountItem o) { return o.GetAddressString() == balance.Address; });
+                        Account account = m_ThinUser.m_Accounts.Find(delegate(Account o) { return o.GetAddressString() == balance.Address; });
                         if (account == null) continue;
-                        account.m_balance = balance.Balance;
-                        if (balance.TxCount != account.m_tx)
+                        account.Balance = balance.Balance;
+                        if (balance.TxCount != account.TxCount)
                         {
-                            account.m_tx = balance.TxCount;
-                            account.m_addressid = balance.AddressID;
+                            account.TxCount = balance.TxCount;
+                            account.AddressId = balance.AddressID;
 
 
-                            GetHistory gethistory = mcrpc.GetHistory(account.GetAddressString(), 0);
+                            GetHistoryRpcResponse gethistory = mcrpc.GetHistory(account.GetAddressString(), 0);
                             if (gethistory != null && gethistory.AddressHistory!=null)
                             {
                                 account.AddTransactions(gethistory.AddressHistory);                                

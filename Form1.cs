@@ -1,6 +1,6 @@
 ﻿/*
  * MicroCash Thin Client
- * Please see License.txt for applicable copyright an licensing details.
+ * Please see License.txt for applicable copyright and licensing details.
  */
 
 using System;
@@ -14,14 +14,11 @@ using System.Text;
 using System.Threading;
 using System.IO;
 using System.Windows.Forms;
-using GradientPanelCode;
-using AccountItemCode;
-using MicroCashLibrary;
-using ThinClientUser;
-using MicroCashClient;
 using System.Xml;
+using MicroCash.Client.Thin.JsonRpc;
+using MicroCash.Client.Thin.JsonRpc.Contracts;
 
-namespace microcash
+namespace MicroCash.Client.Thin
 {    
     
     public partial class Form1 : Form
@@ -31,7 +28,7 @@ namespace microcash
 
         Int64 m_qTotalSC;
         Int64 m_qTotalAccounts;
-        public List<ThinUser> m_ThinUsers;        
+        internal List<ThinUser> m_ThinUsers;        
         private GradientPanel m_LeftPanel;
         private GradientPanel m_BotPanel;
         private Panel m_RightPanel;
@@ -350,16 +347,16 @@ namespace microcash
 
             string newTXOut = "";
 
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                if (account.m_bEnabled == false) continue;
+                if (account.IsEnabled == false) continue;
                 
-                foreach(AddressHistory item in account.m_txhistory)
+                foreach(AddressHistory item in account.TxHistory)
                 {
-                    item.account = account.m_name;
+                    item.account = account.Name;
                     txlist.Add(item);
                 }
-                foreach (AddressHistory item in account.m_newtx)
+                foreach (AddressHistory item in account.NewTx)
                 {
                     string from = GetInfoFromAddressBook(false, item.fromto);
                     if (from == null) from = item.fromto;
@@ -368,7 +365,7 @@ namespace microcash
                     else if( (item.type&1) == 1)    newTXOut += DoBalanceString(item.amount) + " sent to "+from+"\n";                   
 
                 }                
-                account.m_newtx.Clear();
+                account.NewTx.Clear();
             }
 
             if(newTXOut.Length>0) trayIcon.ShowBalloonTip(10000, "MicroCash Transaction", newTXOut, ToolTipIcon.Info);
@@ -418,11 +415,9 @@ namespace microcash
         }
 
 
-        
-        public MicroCashRPC CreateMCRPC()
-        {
-            string ip = m_ConnectTypeIP.Text;
 
+        internal MicroCashRpcClient CreateMCRPC()
+        {
             /*
             TimeSpan ts = DateTime.Now - m_LastWWWListTry;
             if ( ts.TotalSeconds > 10 && m_PublicNodeList.Count == 0)
@@ -455,7 +450,7 @@ namespace microcash
             }
             */
 
-            return new MicroCashRPC("http://" + ip);
+            return new MicroCashRpcClient(GlobalSettings.RpcUrl);
 
         }
 
@@ -474,9 +469,9 @@ namespace microcash
 
             Int64 qTotalSC=0;
             int x = 0;
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                m_AccountItemsGUI[x++].SetBalance(account.m_balance);
+                m_AccountItemsGUI[x++].SetBalance(account.Balance);
                 qTotalSC+=account.GetBalance();
                 
             }
@@ -489,10 +484,10 @@ namespace microcash
             if (m_qTotalAccounts != 0)
             {
                 Int64 qDailyInterest = 0;
-                foreach (AccountItem account in m_ThinUser.m_Accounts)
+                foreach (Account account in m_ThinUser.m_Accounts)
                 {
-                    if (account.m_balance <= 0) continue;
-                    qDailyInterest += -50 + (Int64)(((double)account.m_balance / m_qTotalSC) * (m_qTotalAccounts * 50));
+                    if (account.Balance <= 0) continue;
+                    qDailyInterest += -50 + (Int64)(((double)account.Balance / m_qTotalSC) * (m_qTotalAccounts * 50));
                 }
 
                 if (qDailyInterest < 0)
@@ -555,10 +550,10 @@ namespace microcash
             }
             m_AccountItemsGUI = new List<AccountItemGUI>();
             int x = 0;
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                account.m_tx = 0;
-                m_AccountItemsGUI.Add(new AccountItemGUI(x, this, m_LeftPanel, m_AccountBMPList, account.m_name, account.GetAddressString(), account.GetBalance(), account.m_icon, account.m_bEnabled));
+                account.TxCount = 0;
+                m_AccountItemsGUI.Add(new AccountItemGUI(x, this, m_LeftPanel, m_AccountBMPList, account.Name, account.GetAddressString(), account.GetBalance(), account.IconId, account.IsEnabled));
                 //m_AccountSendItemsGUI.Add(new AccountSendItemGUI(x,m_TabControl.TabPages[0],account) );
 
                 x++;
@@ -571,9 +566,9 @@ namespace microcash
         {
 
             int x=0;
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                m_AccountItemsGUI[x].SetName(account.m_name);
+                m_AccountItemsGUI[x].SetName(account.Name);
                 x++;
             }
 
@@ -713,13 +708,13 @@ namespace microcash
         {
             m_RPCMutex.WaitOne();
 
-            foreach (AccountItem account in m_ThinUser.m_Accounts)
+            foreach (Account account in m_ThinUser.m_Accounts)
             {
-                account.m_txhistory.Clear();
-                account.m_newtx.Clear();
-                account.m_tx = 0;
-                account.m_balance = 0;
-                account.m_addressid=0;
+                account.TxHistory.Clear();
+                account.NewTx.Clear();
+                account.TxCount = 0;
+                account.Balance = 0;
+                account.AddressId=0;
             }
             DoUserAccounts();
             m_ThinUser.Save();
@@ -730,7 +725,7 @@ namespace microcash
 
         public string DoAccountName(int nAccount, string name)
         {
-            m_ThinUser.m_Accounts[nAccount].m_name = name;
+            m_ThinUser.m_Accounts[nAccount].Name = name;
             DoUserAccounts();
             SaveAccount();
             UpdateTransactionHistory();
@@ -744,8 +739,8 @@ namespace microcash
         }
         public void ToggleAccountEnabled(int nAccount)
         {
-            m_ThinUser.m_Accounts[nAccount].m_bEnabled = !m_ThinUser.m_Accounts[nAccount].m_bEnabled;
-            m_AccountItemsGUI[nAccount].SetEnabled(m_ThinUser.m_Accounts[nAccount].m_bEnabled);
+            m_ThinUser.m_Accounts[nAccount].IsEnabled = !m_ThinUser.m_Accounts[nAccount].IsEnabled;
+            m_AccountItemsGUI[nAccount].SetEnabled(m_ThinUser.m_Accounts[nAccount].IsEnabled);
             SaveAccount();
             UpdateTransactionHistory();
         }
@@ -754,7 +749,7 @@ namespace microcash
             EventHandler onClick=new EventHandler(delegate(object sender, EventArgs e)
                 {
                     MenuItem mi = (MenuItem)sender;
-                    m_ThinUser.m_Accounts[nAccount].m_icon = mi.Index;
+                    m_ThinUser.m_Accounts[nAccount].IconId = mi.Index;
                     m_AccountItemsGUI[nAccount].SetIcon(mi.Index);
                     SaveAccount();
                 });
@@ -768,8 +763,8 @@ namespace microcash
 
         public void LoadSettings()
         {
-            m_nSavedConnectType = -1;
-            m_SavedConnectIP = "127.0.0.1:8555";
+            GlobalSettings.ConnectionType = -1;
+            GlobalSettings.RpcAddress = "127.0.0.1:8555";
                         
             XmlTextReader reader = null;
             try
@@ -782,8 +777,8 @@ namespace microcash
                         case XmlNodeType.Element: // The node is an element.
                             switch (reader.Name)
                             {
-                                case "connecttype": reader.MoveToContent(); m_nSavedConnectType = reader.ReadElementContentAsInt(); break;
-                                case "connectip": reader.MoveToContent(); m_SavedConnectIP = reader.ReadElementContentAsString(); break;                                
+                                case "connecttype": reader.MoveToContent(); GlobalSettings.ConnectionType = reader.ReadElementContentAsInt(); break;
+                                case "connectip": reader.MoveToContent(); GlobalSettings.RpcAddress = reader.ReadElementContentAsString(); break;                                
                             }
                             break;
                         case XmlNodeType.EndElement:
@@ -816,8 +811,8 @@ namespace microcash
                 writer.WriteStartDocument();
                 writer.WriteStartElement("Settings");
 
-                writer.WriteElementString("connecttype", m_ConnectType.SelectedIndex.ToString());
-                writer.WriteElementString("connectip", m_ConnectTypeIP.Text);
+                writer.WriteElementString("connecttype", GlobalSettings.ConnectionType.ToString());
+                writer.WriteElementString("connectip", GlobalSettings.RpcAddress);
                
 
                 writer.WriteEndElement();
@@ -852,6 +847,21 @@ namespace microcash
                 }
             }
             return myBitmap;
+        }
+
+        private void Form1_Resize_1(object sender, EventArgs e)
+        {
+            if (FormWindowState.Minimized == this.WindowState)
+            {
+                notifyIcon1.Visible = true;
+                this.Hide();
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
         } 
         
         

@@ -74,11 +74,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="account.cs" />
+    <Compile Include="Account.cs" />
     <Compile Include="Blake512.cs" />
-    <Compile Include="tests.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="GlobalSettings.cs" />
+    <Compile Include="JsonRpc\Contracts\GetBalanceRpcResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\GetBlockByNumberRpcResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\GetHistoryRpcResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\GetInfoRpcResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\GetWorkRpcResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\RpcErrorResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\SendTransactionRpcResponse.cs" />
+    <Compile Include="JsonRpc\MicroCashRpc.cs" />
+    <Compile Include="SendTxResult.cs" />
     <Compile Include="connectionpanel.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,8 +98,7 @@
     <Compile Include="maintabs.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="sc_client_data.cs" />
-    <Compile Include="sc_client_json.cs" />
+    <Compile Include="JsonRpc\sc_client_json.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -200,6 +206,7 @@
     <Content Include="Documentation\Dependencies.txt" />
     <Content Include="License.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
