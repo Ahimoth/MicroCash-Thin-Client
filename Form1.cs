@@ -852,6 +852,21 @@ namespace microcash
                 }
             }
             return myBitmap;
+        }
+
+        private void Form1_Resize_1(object sender, EventArgs e)
+        {
+            if (FormWindowState.Minimized == this.WindowState)
+            {
+                notifyIcon1.Visible = true;
+                this.Hide();
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Normal;
         } 
         
         
