@@ -223,9 +223,17 @@ namespace MicroCashClient
                     using (Stream sr = ex.Response.GetResponseStream())
                     {
                         DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(SCErrorResponse));
-                        SCErrorResponse response = (SCErrorResponse)deserializer.ReadObject(sr);
-                        retresponse.HttpErrorMessage = response.error.message;
-                        //MessageBox.Show(response.error.message, "Server returned error");
+                        SCErrorResponse response;
+                        try
+                        {
+                            response = (SCErrorResponse)deserializer.ReadObject(sr);
+                            retresponse.HttpErrorMessage = response.error.message;
+                            //MessageBox.Show(response.error.message, "Server returned error");
+                        }
+                        catch (SerializationException e)
+                        {
+                            MessageBox.Show("Error retrieving from the Node.\nThe server seems to return an unexpected Dataset");
+                        }
                     }
                 else if (ex.Status == WebExceptionStatus.ConnectFailure)
                 {
