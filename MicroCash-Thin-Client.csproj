@@ -53,10 +53,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto">
-      <HintPath>..\lib\BouncyCastle.Crypto.dll</HintPath>
+      <HintPath>..\..\bcastel\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="JacksonSoft.CustomTabControl">
-      <HintPath>..\lib\JacksonSoft.CustomTabControl.dll</HintPath>
+      <HintPath>..\..\bcastel\JacksonSoft.CustomTabControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
