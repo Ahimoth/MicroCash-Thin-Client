@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Runtime.Serialization.Json;
 using System.Net;
-using MicroCash.Client.Thin.JsonRpc.Contracts;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Text;
+using MicroCash.Client.Thin.JsonRpc.Contracts;
 
 namespace MicroCash.Client.Thin.JsonRpc
 {

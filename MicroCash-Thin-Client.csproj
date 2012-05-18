@@ -52,11 +52,13 @@
     <ApplicationIcon>microcash.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto">
-      <HintPath>..\lib\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4114.6375, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="JacksonSoft.CustomTabControl">
-      <HintPath>..\lib\JacksonSoft.CustomTabControl.dll</HintPath>
+    <Reference Include="JacksonSoft.CustomTabControl, Version=1.0.1.7, Culture=neutral, PublicKeyToken=53c237210c7e462d, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\JacksonSoft.CustomTabControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -209,7 +211,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documentation\p2p node api.txt" />
-    <Content Include="Documentation\Dependencies.txt" />
+    <Content Include="lib\BouncyCastle.Crypto.dll" />
+    <Content Include="lib\Dependencies.txt" />
+    <Content Include="lib\JacksonSoft.CustomTabControl.dll" />
     <Content Include="License.txt" />
   </ItemGroup>
   <ItemGroup />

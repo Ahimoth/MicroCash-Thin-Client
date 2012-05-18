@@ -4,32 +4,62 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Security.Cryptography;
-using Org.BouncyCastle.Asn1;
+using System.Text;
+using BlakeSharp;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Math;
-using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
-using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
-using BlakeSharp;
+using Org.BouncyCastle.Security;
+
 namespace MicroCash.Client.Thin
 {    
 
     internal class MicroCashKeyPair
     {
-        public BigInteger m_Priv;
-        public byte[] m_Pub;
-        public byte[] m_Address;
-        public string m_PrivKeyString;
-        public string m_PubKeyString;
-        
+        #region Fields
+        private BigInteger m_Priv;
+        private byte[] m_Pub;
+        private byte[] m_Address;
+        private string m_PrivKeyString;
+        private string m_PubKeyString;
+        #endregion
+
+        #region Properties
+        private BigInteger PrivateKey
+        {
+            get { return m_Priv; }
+            set { m_Priv = value; }
+        }
+
+        public byte[] PublicKeyBytes
+        {
+            get { return m_Pub; }
+            private set { m_Pub = value; }
+        }
+
+        private byte[] AddressBytes
+        {
+            get { return m_Address; }
+            set { m_Address = value; }
+        }
+
+        public string PrivateKeyString
+        {
+            get { return m_PrivKeyString; }
+            private set { m_PrivKeyString = value; }
+        }
+
+        public string PublicKeyString
+        {
+            get { return m_PubKeyString; }
+            private set { m_PubKeyString = value; }
+        }
+        #endregion
+
         /** Generates an entirely new keypair. */
         public MicroCashKeyPair(bool bGenerate)
         {
@@ -68,13 +98,21 @@ namespace MicroCash.Client.Thin
             }
         }
 
+        public bool HasPrivateKey
+        {
+            get
+            {
+                return !(PrivateKey == null);
+            }
+        }
+
         public void SetKeyByString(string priv, string pub)
         {
-            m_Priv = new BigInteger(1,HexString2Bytes(priv));
-            m_Pub = HexString2Bytes(pub);
-            m_Address = ConvertPubKeyToAddress(m_Pub);
-            m_PubKeyString = bytesToHexString(m_Pub);
-            m_PrivKeyString = bytesToHexString(m_Priv.ToByteArray());
+            PrivateKey = new BigInteger(1,HexString2Bytes(priv));
+            PublicKeyBytes = HexString2Bytes(pub);
+            AddressBytes = ConvertPubKeyToAddress(PublicKeyBytes);
+            PublicKeyString = bytesToHexString(PublicKeyBytes);
+            PrivateKeyString = bytesToHexString(PrivateKey.ToByteArray());
         }
               
         private static byte[] ConvertPubKeyToAddress(byte[] bytes)
@@ -112,13 +150,13 @@ namespace MicroCash.Client.Thin
 
         public string GetAddressString()
         {
-            MicroCashAddress outaddr = new MicroCashAddress(m_Address);
+            MicroCashAddress outaddr = new MicroCashAddress(AddressBytes);
             return outaddr.GetAddressString();
         }
 
         public byte[] GetAddressBytes()
         {
-            return m_Address;
+            return AddressBytes;
         }
 
         internal static byte[] HexString2Bytes(string hexString)
@@ -162,8 +200,8 @@ namespace MicroCash.Client.Thin
             var ps = Org.BouncyCastle.Asn1.Sec.SecNamedCurves.GetByName("secp256k1");
             ECDomainParameters ecParams = new ECDomainParameters(ps.Curve, ps.G, ps.N, ps.H);
 
-            ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(m_Priv, ecParams);
-            ECPublicKeyParameters pubKey = new ECPublicKeyParameters(ecParams.Curve.DecodePoint(m_Pub), ecParams);
+            ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(PrivateKey, ecParams);
+            ECPublicKeyParameters pubKey = new ECPublicKeyParameters(ecParams.Curve.DecodePoint(PublicKeyBytes), ecParams);
 
             signer.Init(true, privKey);
             signerverify.Init(false, pubKey);

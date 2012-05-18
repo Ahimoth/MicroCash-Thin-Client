@@ -1,0 +1,15 @@
+﻿The MicroCash Thin Client has the following external dependencies.
+
+  .Net Framework 4.0 (http://www.microsoft.com/en-us/download/details.aspx?id=17851) or compatibile replacement (MONO).
+    This component needs to be installed on the system.
+
+  BouncyCastle.Crypto 1.7 (http://www.bouncycastle.org/csharp/)
+    This dll needs to be in the same folder as this document.
+
+  JacksonSoft.CustomTabControl (http://www.codeproject.com/Articles/91387/Painting-Your-Own-Tabs-Second-Edition)
+    This dll needs to be in the same folder as this document.
+
+
+
+Visual Studio 2010 Express will make things a lot easier if you don't already have a version of Visual Studio.
+(http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express)

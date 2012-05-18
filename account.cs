@@ -5,15 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
-using System.Windows.Forms;
 using System.Xml;
-using MicroCash.Client.Thin.JsonRpc.Contracts;
 using MicroCash.Client.Thin.JsonRpc;
+using MicroCash.Client.Thin.JsonRpc.Contracts;
 
 namespace MicroCash.Client.Thin
 {
@@ -23,7 +17,7 @@ namespace MicroCash.Client.Thin
         private bool m_bEnabled;
         private string m_name;
         private Int64 m_balance;
-        private int m_tx;
+        private int m_txCount;
         private uint m_addressid;
         private int m_icon;
         private MicroCashKeyPair m_KeyPair;
@@ -52,8 +46,8 @@ namespace MicroCash.Client.Thin
 
         public int TxCount
         {
-            get { return m_tx; }
-            set { m_tx = value; }
+            get { return m_txCount; }
+            set { m_txCount = value; }
         }
 
         public uint AddressId
@@ -86,7 +80,7 @@ namespace MicroCash.Client.Thin
             m_bEnabled = true;
             m_balance = 0;
             m_icon = 0;
-            m_tx = 0;
+            m_txCount = 0;
             m_addressid = 0;
             m_KeyPair = new MicroCashKeyPair(false);
             m_txhistory = new List<AddressHistory>();
@@ -95,7 +89,7 @@ namespace MicroCash.Client.Thin
         
         public void GenerateKeyPair()
         {
-            if (m_KeyPair == null || m_KeyPair.m_Priv == null)
+            if (m_KeyPair == null || !m_KeyPair.HasPrivateKey)
                 m_KeyPair = new MicroCashKeyPair(true);
             else
                 throw new InvalidOperationException("Account already has a key! A new key cannot be assigned to this account!");
@@ -141,7 +135,7 @@ namespace MicroCash.Client.Thin
         {
             MicroCashTransaction tx = new MicroCashTransaction();
 
-            Array.Copy(m_KeyPair.m_Pub, 1, tx.m_Extra1, 0, 64);    //this isnt always sent, but may as well just copy it 
+            Array.Copy(m_KeyPair.PublicKeyBytes, 1, tx.m_Extra1, 0, 64);    //this isnt always sent, but may as well just copy it 
             tx.m_dwAddressID = this.AddressId;
             if (tx.m_dwAddressID == 0)
             {
@@ -180,12 +174,12 @@ namespace MicroCash.Client.Thin
             writer.WriteStartElement("account");
             writer.WriteElementString("name", m_name);
             writer.WriteElementString("icon", m_icon.ToString());
-            writer.WriteElementString("numtx", m_tx.ToString());
+            writer.WriteElementString("numtx", m_txCount.ToString());
             writer.WriteElementString("addressid", m_addressid.ToString());
             writer.WriteElementString("balance", m_balance.ToString());
-            writer.WriteElementString("pubkey", m_KeyPair.m_PubKeyString);
-            writer.WriteElementString("privkey", m_KeyPair.m_PrivKeyString);
-            writer.WriteElementString("enabled", m_bEnabled.ToString());
+            writer.WriteElementString("pubkey", m_KeyPair.PublicKeyString);
+            writer.WriteElementString("privkey", m_KeyPair.PrivateKeyString);
+            writer.WriteElementString("enabled", IsEnabled.ToString());
             writer.WriteStartElement("transactions");
             foreach (AddressHistory tx in m_txhistory)
             {
@@ -235,7 +229,7 @@ namespace MicroCash.Client.Thin
                             case "privkey": priv = value; break;
                             case "pubkey": pub = value; break;
                             case "icon": m_icon = Convert.ToInt32(value); break;
-                            case "numtx": m_tx = Convert.ToInt32(value); break;
+                            case "numtx": m_txCount = Convert.ToInt32(value); break;
                             case "addressid": m_addressid = Convert.ToUInt32(value); break;
                             case "balance": m_balance = Convert.ToInt64(value); break;
                             case "enabled": m_bEnabled = Convert.ToBoolean(value); break;
