@@ -379,7 +379,7 @@ namespace MicroCash.Client.Thin
             foreach (AddressHistory history in txlist)
             {
                 string info = "";
-                string amount = MicroCashFunctions.MoneyToString(history.amount);
+                string amount = MicroCashHelper.MoneyToString(history.amount);
 
                 DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
                 DateTime time = epoch.AddSeconds(history.time);
@@ -786,13 +786,13 @@ namespace MicroCash.Client.Thin
                     }
                 }
             }
-            catch (System.IO.FileNotFoundException exception)
+            catch (System.IO.FileNotFoundException)
             {
                 return;
             }
             catch (Exception exception)
             {
-                MessageBox.Show("Error reading settings.xml");
+                MessageBox.Show(String.Format("Error reading settings.xml: {0}", exception.Message));
             }
             finally
             {
@@ -819,7 +819,7 @@ namespace MicroCash.Client.Thin
                 writer.WriteEndDocument();
                 writer.Flush();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 MessageBox.Show("Failed to write settings.xml");
                 return false;
@@ -874,7 +874,7 @@ namespace MicroCash.Client.Thin
         public const string FONTNAMEMONO = "Courier New";
     }
 
-    public class AccountItemGUI
+    public class AccountItemGUI: IDisposable
     {
         int m_AccountNumber;
         int m_icon;
@@ -889,6 +889,38 @@ namespace MicroCash.Client.Thin
         List<Bitmap> m_IconBmpList;
         TextBox m_EditName;
         bool m_bEnabled;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (m_Parent != null)
+                    m_Parent.Dispose();
+                if (m_Inner != null)
+                    m_Inner.Dispose();
+                if (m_AccountName != null)
+                    m_AccountName.Dispose();
+                if (m_Address != null)
+                    m_Address.Dispose();
+                if (m_Amount != null)
+                    m_Amount.Dispose();
+                if (m_ParentForm != null)
+                    m_ParentForm.Dispose();
+                if (m_Image != null)
+                    m_Image.Dispose();
+                if (m_IconBmpList != null)
+                    foreach (Bitmap bm in m_IconBmpList)
+                        bm.Dispose();
+                if (m_EditName != null)
+                    m_EditName.Dispose();
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         public AccountItemGUI(int nNumber, Form1 ParentForm, Panel parentpanel, List<Bitmap> IconBmp, string name, string address, Int64 balance, int icon, bool bEnabled)
         {            
@@ -1014,12 +1046,11 @@ namespace MicroCash.Client.Thin
         public void Resize()
         {
             int w = m_Parent.ClientSize.Width;
-            int h=87;
                         
             m_Inner.Size = new Size(w, 70);
 
-            w = m_Inner.ClientSize.Width;h = 80;
-
+            w = m_Inner.ClientSize.Width;
+            
             m_Image.Location = new Point(5, 10);
             m_Image.Size = new Size(50, 50);
             m_AccountName.Location = new Point(60, 10);
@@ -1111,13 +1142,6 @@ namespace MicroCash.Client.Thin
         {
             if(m_EditName.Visible==false)   m_Parent.Focus();
         }
-
-        
-
-
-
-
-        
 
     }
 }

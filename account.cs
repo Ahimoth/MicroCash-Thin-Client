@@ -166,7 +166,7 @@ namespace MicroCash.Client.Thin
             tx.m_Signature = m_KeyPair.Sign(hash);
 
             MicroCashRpcClient mcrpc = new MicroCashRpcClient(GlobalSettings.RpcUrl);
-            SendTransactionRpcResponse sendtx = mcrpc.SendTransaction(MicroCashFunctions.ToHex(tx.GetByteBuffer(true)));
+            SendTransactionRpcResponse sendtx = mcrpc.SendTransaction(MicroCashHelper.ToHex(tx.GetByteBuffer(true)));
 
             SendTxResult result = new SendTxResult();
             result.IsSent = sendtx.sent;

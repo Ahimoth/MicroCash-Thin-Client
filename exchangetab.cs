@@ -149,10 +149,10 @@ namespace MicroCash.Client.Thin
                 Exchange_BTCE response2 = null;
                 try
                 {
-                    response = ((Exchange_SLC24)JsonHelper.GetObjectFromHTML<Exchange_SLC24>("https://slc24.com/api/exchange/orderbook/btc"));
-                    response2 = ((Exchange_BTCE)JsonHelper.GetObjectFromHTML<Exchange_BTCE>("https://btc-e.com/api/2/5/depth"));
+                    response = JsonHelper.GetObjectFromHTML<Exchange_SLC24>("https://slc24.com/api/exchange/orderbook/btc");
+                    response2 = JsonHelper.GetObjectFromHTML<Exchange_BTCE>("https://btc-e.com/api/2/5/depth");
                 }
-                catch(Exception e)
+                catch
                 {
                 }
 

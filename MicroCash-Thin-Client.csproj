@@ -53,10 +53,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto">
-      <HintPath>..\..\bcastel\BouncyCastle.Crypto.dll</HintPath>
+      <HintPath>..\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="JacksonSoft.CustomTabControl">
-      <HintPath>..\..\bcastel\JacksonSoft.CustomTabControl.dll</HintPath>
+      <HintPath>..\lib\JacksonSoft.CustomTabControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -74,7 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
+    <Compile Include="account.cs" />
     <Compile Include="Blake512.cs" />
     <Compile Include="GlobalSettings.cs" />
     <Compile Include="JsonRpc\Contracts\GetBalanceRpcResponse.cs" />
@@ -82,9 +82,14 @@
     <Compile Include="JsonRpc\Contracts\GetHistoryRpcResponse.cs" />
     <Compile Include="JsonRpc\Contracts\GetInfoRpcResponse.cs" />
     <Compile Include="JsonRpc\Contracts\GetWorkRpcResponse.cs" />
+    <Compile Include="JsonRpc\Contracts\MicroCashTransaction.cs" />
     <Compile Include="JsonRpc\Contracts\RpcErrorResponse.cs" />
     <Compile Include="JsonRpc\Contracts\SendTransactionRpcResponse.cs" />
+    <Compile Include="JsonRpc\JsonCommand.cs" />
+    <Compile Include="JsonRpc\JsonHelper.cs" />
+    <Compile Include="JsonRpc\JsonResponse.cs" />
     <Compile Include="JsonRpc\MicroCashRpc.cs" />
+    <Compile Include="MicroCashHelper.cs" />
     <Compile Include="SendTxResult.cs" />
     <Compile Include="connectionpanel.cs">
       <SubType>Form</SubType>
@@ -98,7 +103,6 @@
     <Compile Include="maintabs.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="JsonRpc\sc_client_json.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,9 +125,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form2.resx">
       <DependentUpon>Form2.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

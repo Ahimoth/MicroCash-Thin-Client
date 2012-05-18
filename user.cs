@@ -66,7 +66,7 @@ namespace MicroCash.Client.Thin
                 writer.WriteEndDocument();
                 writer.Flush();
             }
-            catch (Exception exception)
+            catch
             {
                 MessageBox.Show("Failed to write " + m_name);
                 return false;
@@ -115,11 +115,11 @@ namespace MicroCash.Client.Thin
                     }
                 }
             }
-            catch (System.IO.FileNotFoundException exception)
+            catch (System.IO.FileNotFoundException)
             {
                 return false;
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 MessageBox.Show("Error reading " + m_FileName);
             }

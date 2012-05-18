@@ -32,8 +32,6 @@ namespace MicroCash.Client.Thin
 
         PictureBox m_AboutLogo;
         
-        WebBrowser m_HelpBrowse;
-
         Label m_SendFromLabel;
         ComboBox m_SendFrom;
         TextBox m_SendFromAmount;

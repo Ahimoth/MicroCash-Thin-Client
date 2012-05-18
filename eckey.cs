@@ -81,29 +81,33 @@ namespace MicroCash.Client.Thin
         {
             byte[] messageANDbytes = new byte[64 + bytes.Length];
 
-            Blake512 blake512 = new Blake512();
-
-            //first compute blake hash of pubkey
-            byte[] pbHash = blake512.ComputeHash(bytes);
-            
-            //then copy into our "Message and hash" buffer
-            Array.Copy(pbHash,0, messageANDbytes,0, 64);
-            Array.Copy(bytes,0,messageANDbytes,64,bytes.Length);
-
-            //do some rounds of blake512
-            for (int x = 0; x < 100; x++)
+            using (Blake512 blake512 = new Blake512())
             {
-                pbHash = blake512.ComputeHash(messageANDbytes); //compute hash
-                Array.Copy(pbHash, 0, messageANDbytes, 0, 64);  //copy new hash into it
+
+                //first compute blake hash of pubkey
+                byte[] pbHash = blake512.ComputeHash(bytes);
+
+                //then copy into our "Message and hash" buffer
+                Array.Copy(pbHash, 0, messageANDbytes, 0, 64);
+                Array.Copy(bytes, 0, messageANDbytes, 64, bytes.Length);
+
+                //do some rounds of blake512
+                for (int x = 0; x < 100; x++)
+                {
+                    pbHash = blake512.ComputeHash(messageANDbytes); //compute hash
+                    Array.Copy(pbHash, 0, messageANDbytes, 0, 64);  //copy new hash into it
+                }
             }
 
-            SHA256 hash256 = SHA256.Create();
-            hash256.Initialize();
-            hash256.TransformFinalBlock(messageANDbytes, 0, messageANDbytes.Length);
+            using (SHA256 hash256 = SHA256.Create())
+            {
+                hash256.Initialize();
+                hash256.TransformFinalBlock(messageANDbytes, 0, messageANDbytes.Length);
 
-            byte[] address = new byte[10];
-            Array.Copy(hash256.Hash, 0, address, 0, 10);
-            return address;
+                byte[] address = new byte[10];
+                Array.Copy(hash256.Hash, 0, address, 0, 10);
+                return address;
+            }
         }
 
         public string GetAddressString()
@@ -192,7 +196,6 @@ namespace MicroCash.Client.Thin
 
     public class MicroCashAddress
     {
-        private string m_Address;
         private byte[] m_Address80;
         private byte[] m_Info;
         private int m_nAmount;
@@ -346,7 +349,6 @@ namespace MicroCash.Client.Thin
             //decode the actual address and check its checksum
             byte[] checkBytes = null;
             byte[] infoBytes = null;
-            int nCheckByteLen;
             byte[] addrbytes = DecodeBase32(inner.Substring(0,16));
             if(addrbytes==null || addrbytes.Length != 10) return false;
             m_Address80=addrbytes;
@@ -404,11 +406,12 @@ namespace MicroCash.Client.Thin
 
 
         private static string _base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-        private static int _base32 = 32;
+        
         public static string EncodeChar(byte input)
         {
             return _base32Alphabet[input & 0x1F].ToString();    //only have 5 bits to work with in a byte
         }
+        
         public static String EncodeBase32(byte[] input)
         {
             int nBitCount = 0;

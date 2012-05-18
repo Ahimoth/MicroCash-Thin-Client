@@ -63,7 +63,7 @@ namespace MicroCash.Client.Thin
 
 
 
-            TextChanged(null,null);
+            OnTextChanged(null,null);
         }
 
         bool IsValidFilename(string testName)
@@ -117,7 +117,7 @@ namespace MicroCash.Client.Thin
             this.Close();
         }
 
-        private void TextChanged(object sender, EventArgs e)
+        private void OnTextChanged(object sender, EventArgs e)
         {
             string user = ((TextBox)(this.Controls.Find("username", true)[0])).Text;
             string pass1 = ((TextBox)(this.Controls.Find("password1", true)[0])).Text;
