@@ -250,9 +250,6 @@ namespace MicroCash.Client.Thin
         public string EncodeAddress(bool bLongAddress, bool bPayMentCode)
         {
             if (m_Address80 == null) return "";
-            //checksum
-            SHA256 hash256 = SHA256.Create();
-            hash256.Initialize();
 
             byte[] CheckBytes = null;
             string checkaddr = ""; 
@@ -294,8 +291,15 @@ namespace MicroCash.Client.Thin
                 Array.Copy(m_Address80, 0, CheckBytes, 0, 10);                
                 
             }
-            hash256.TransformFinalBlock(CheckBytes, 0, CheckBytes.Length);
-            checkaddr = EncodeChar(hash256.Hash[0]);
+
+            //checksum
+            using (SHA256 hash256 = SHA256.Create())
+            {
+                hash256.Initialize();
+                hash256.TransformFinalBlock(CheckBytes, 0, CheckBytes.Length);
+                checkaddr = EncodeChar(hash256.Hash[0]);
+            }
+
             return "micro(" + inaddr + info + amount + checkaddr +")cash";
 
         }
@@ -400,10 +404,13 @@ namespace MicroCash.Client.Thin
                 checksumByte = DecodeChar(inner[37]);
             }
 
+            //SHA256.Create() should return the best implementation of the sha256 hash for the current system
+            using (SHA256 hash256 = SHA256.Create())
+            {
+                byte[] checksum = hash256.ComputeHash(checkBytes, 0, checkBytes.Length);
+                if (checksumByte != (checksum[0] & 0x1F)) return false;
+            }
 
-            SHA256CryptoServiceProvider sha256 = new SHA256CryptoServiceProvider();
-            byte[] checksum = sha256.ComputeHash(checkBytes, 0, checkBytes.Length);
-            if (checksumByte != (checksum[0] & 0x1F)) return false;
             m_bIsValid = true;
             return true;
         }

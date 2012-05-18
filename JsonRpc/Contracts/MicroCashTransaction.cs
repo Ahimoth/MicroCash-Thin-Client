@@ -50,11 +50,12 @@ namespace MicroCash.Client.Thin.JsonRpc.Contracts
 
         public byte[] GetHash(bool bIncludeSig)
         {
-
-            SHA256 shaM = new SHA256Managed();
-            byte[] result = shaM.ComputeHash(GetByteBuffer(bIncludeSig));
-            byte[] result2 = shaM.ComputeHash(result);
-            return result2;
+            using (SHA256 hash256 = SHA256.Create())
+            {
+                byte[] result = hash256.ComputeHash(GetByteBuffer(bIncludeSig));
+                byte[] result2 = hash256.ComputeHash(result);
+                return result2;
+            }
         }
     }
 }
