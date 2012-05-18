@@ -26,7 +26,7 @@ namespace MicroCash.Client.Thin
         private int m_tx;
         private uint m_addressid;
         private int m_icon;
-        private CMicroCashKeyPair m_KeyPair;
+        private MicroCashKeyPair m_KeyPair;
         private List<AddressHistory> m_txhistory;
         private List<AddressHistory> m_newtx;
         #endregion
@@ -88,7 +88,7 @@ namespace MicroCash.Client.Thin
             m_icon = 0;
             m_tx = 0;
             m_addressid = 0;
-            m_KeyPair = new CMicroCashKeyPair(false);
+            m_KeyPair = new MicroCashKeyPair(false);
             m_txhistory = new List<AddressHistory>();
             m_newtx = new List<AddressHistory>();
         }
@@ -96,7 +96,7 @@ namespace MicroCash.Client.Thin
         public void GenerateKeyPair()
         {
             if (m_KeyPair == null || m_KeyPair.m_Priv == null)
-                m_KeyPair = new CMicroCashKeyPair(true);
+                m_KeyPair = new MicroCashKeyPair(true);
             else
                 throw new InvalidOperationException("Account already has a key! A new key cannot be assigned to this account!");
         }
