@@ -33,7 +33,7 @@ namespace Org.BouncyCastle.Math.EC
 			return Equals(other);
 		}
 
-		protected bool Equals(
+		public bool Equals(
 			ECFieldElement other)
 		{
 			return ToBigInteger().Equals(other.ToBigInteger());
