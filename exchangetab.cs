@@ -145,11 +145,9 @@ namespace MicroCash.Client.Thin
                     continue;
                 }
                 object[] parameters = { null };
-                Exchange_SLC24 response = null;
                 Exchange_BTCE response2 = null;
                 try
                 {
-                    response = JsonHelper.GetObjectFromHTML<Exchange_SLC24>("https://slc24.com/api/exchange/orderbook/btc");
                     response2 = JsonHelper.GetObjectFromHTML<Exchange_BTCE>("https://btc-e.com/api/2/5/depth");
                 }
                 catch
@@ -158,16 +156,11 @@ namespace MicroCash.Client.Thin
 
                 m_ExchangeMutex.WaitOne();
                 m_bMCExchangeUpdate = false;
-                if (response != null || response2 != null)
+                if (response2 != null)
                 {
                     m_MCExchangeBuys.Clear();
                     m_MCExchangeSells.Clear();
                     m_bMCExchangeGUIUpdate = true;
-                }
-                if (response!=null)
-                {
-                    m_MCExchangeBuys.AddRange(response.GetBuyList());
-                    m_MCExchangeSells.AddRange(response.GetSellList());
                 }
                 if (response2 != null)
                 {
@@ -241,41 +234,6 @@ namespace MicroCash.Client.Thin
                     Exchange_Pair item = new Exchange_Pair();
                     item.amount = pair[1];
                     item.price = pair[0];
-                    ret.Add(item);                                         
-                }                                 
-                return ret;
-            }
-        }
-
-        [DataContract]
-        public class Exchange_SLC24
-        {
-            public Exchange_SLC24() { }
-            [DataMember(Name = "bid")]
-            public List<Exchange_Pair1> buys { get; set; }
-            [DataMember(Name = "ask")]
-            public List<Exchange_Pair1> sells { get; set; }
-
-            public List<Exchange_Pair> GetBuyList()
-            {
-                List<Exchange_Pair> ret = new List<Exchange_Pair>();
-                foreach(Exchange_Pair1 pair in buys)
-                {
-                    Exchange_Pair item = new Exchange_Pair();
-                    item.amount = pair.amount;
-                    item.price = pair.price;
-                    ret.Add(item);                                         
-                }                                 
-                return ret;
-            }
-            public List<Exchange_Pair> GetSellList()
-            {
-                List<Exchange_Pair> ret = new List<Exchange_Pair>();
-                foreach(Exchange_Pair1 pair in sells)
-                {
-                    Exchange_Pair item = new Exchange_Pair();
-                    item.amount = pair.amount;
-                    item.price = pair.price;
                     ret.Add(item);                                         
                 }                                 
                 return ret;
